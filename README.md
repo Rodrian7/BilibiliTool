@@ -11,4 +11,5 @@ autostart=true
 autorestart=true
 directory=/root/BilibiliTool
 stdout_logfile=/var/log/BilibiliTool.log
+redirect_stderr=true
 ```
