@@ -19,6 +19,9 @@ import sqlite3
 db_file = "bilibili.db"
 scheduler = BlockingScheduler()
 
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("bilibiliexp")
+
 
 def create_table():
     with sqlite3.connect(db_file) as db:
@@ -288,21 +291,21 @@ def spider_schedule():
     scheduler.remove_job('spider_schedule')
 
     try:
-        logging.info('spider start...', datetime.now().strftime('%Y-%m-%d %X'))
+        logging.info('spider start...')
         # my job code
         heart_beat()
         interval_seconds = random.randint(360, 400)
-        logging.info('双端观看直播中..., 时长', interval_seconds)
+        logging.info('双端观看直播中..., 时长' + str(interval_seconds))
         time.sleep(interval_seconds)
         task_begin()
-        logging.info('spider end...', datetime.now().strftime('%Y-%m-%d %X'))
+        logging.info('spider end...')
 
     except Exception as e:
         logging.info(traceback.format_exc(e))
     finally:
         interval_hours = random.randint(3, 5)
         interval_minutes = random.randint(1, 60)
-        logging.info('下次运行任务时间为', interval_hours, 'h', interval_minutes, 'm后')
+        logging.info('下次运行任务时间为'+ str(interval_hours) +  'h' + str(interval_minutes) + 'm后')
         scheduler.add_job(spider_schedule, 'interval', hours=interval_hours,
                 minutes=interval_minutes, id='spider_schedule')
 
@@ -315,7 +318,6 @@ def main():
     everyday_set()
     task_begin()
     heart_beat()
-    logging.basicConfig()
     scheduler.add_job(everyday_set, 'cron', hour=0, minute=1)
     scheduler.add_job(heart_beat, 'cron', minute='*/5')
     scheduler.add_job(spider_schedule, 'interval', seconds=1, id='spider_schedule')

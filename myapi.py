@@ -14,6 +14,9 @@ from Crypto.PublicKey import RSA
 APP_KEY = '1d8b6e7d45233436'
 APP_SECRET = '560c52ccd288fed045859ed18bffd973'
 
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("myapi")
+
 
 def get_sign(params):
     items = list(params.items())

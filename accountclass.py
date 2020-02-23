@@ -6,6 +6,9 @@ import random
 import logging
 
 
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("myapi")
+
 class bilibili:
     def __init__(self, ID, Password, access_key, cookies, aid, a_type, finished, logined, watched, shared, coin_added,
                  double_watch, s2c, signed, last_like_dynamic):
