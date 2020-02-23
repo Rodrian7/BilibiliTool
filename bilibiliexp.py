@@ -50,7 +50,7 @@ def insertdb(ID, Password, a_type):
         access_key = myapi.get_access_key(ID, Password)
         cookies = myapi.get_cookies(access_key)
         if access_key == '-1':
-            logging.warning('密码错误')
+            logging.info('密码错误')
             return
         if a_type != 4:
             sql = """INSERT INTO Account
@@ -63,11 +63,11 @@ def insertdb(ID, Password, a_type):
 
         try:
             cursor.execute(sql)
-            logging.warning("%s 插入成功" % ID)
+            logging.info("%s 插入成功" % ID)
             db.commit()
         except:
-            logging.warning('插入数据失败!')
-            logging.warning(sql)
+            logging.info('插入数据失败!')
+            logging.info(sql)
             db.rollback()
 
 
@@ -87,7 +87,7 @@ def querydball(finish=True):
                 ID = row[0]
                 id_list.append(ID)
         except:
-            logging.warning("Error: unable to fecth data")
+            logging.info("Error: unable to fecth data")
         return id_list
 
 
@@ -101,7 +101,7 @@ def delete_db(ID):
             cursor.execute(sql)
             db.commit()
         except:
-            logging.warning('删除数据失败!')
+            logging.info('删除数据失败!')
             db.rollback()
 
 
@@ -115,7 +115,7 @@ def delete_all_in_db():
             cursor.execute(sql)
             db.commit()
         except:
-            logging.warning('删除数据失败!')
+            logging.info('删除数据失败!')
             db.rollback()
 
 
@@ -126,17 +126,17 @@ def everyday_set():
         try:
             cursor.execute(sql)
             db.commit()
-            logging.warning('更新数据成功')
+            logging.info('更新数据成功')
         except:
-            logging.warning('更新数据失败!')
+            logging.info('更新数据失败!')
             db.rollback()
         sql = "UPDATE Account SET double_watch = 1,s2c = 1,coin_added = 1 WHERE a_type=4"
         try:
             cursor.execute(sql)
             db.commit()
-            logging.warning('更新数据成功')
+            logging.info('更新数据成功')
         except:
-            logging.warning('更新数据失败!')
+            logging.info('更新数据失败!')
             db.rollback()
 
 
@@ -151,7 +151,7 @@ def flush_db(bilibili_temp):
             cursor.execute(sql)
             db.commit()
         except:
-            logging.warning('更新数据失败!')
+            logging.info('更新数据失败!')
             db.rollback()
     return key_temp, json.loads(cookies_temp.replace("'", '"'))
 
@@ -164,10 +164,10 @@ def query_db(id):
         bilibili_temp = bilibili(result[0], result[1], result[2], result[3], result[5], result[6], result[7], result[8],
                                  result[9], result[10], result[11], result[12], result[13], result[14], result[16])
         if not bilibili_temp.cookies_test():
-            logging.warning("%s cookies需重新获取" % id)
+            logging.info("%s cookies需重新获取" % id)
             bilibili_temp.access_key, bilibili_temp.cookie = flush_db(bilibili_temp)
         if not bilibili_temp.token_test():
-            logging.warning("%s token需重新获取" % id)
+            logging.info("%s token需重新获取" % id)
             bilibili_temp.access_key, bilibili_temp.cookie = flush_db(bilibili_temp)
     return bilibili_temp
 
@@ -183,8 +183,8 @@ def back2db(bilibili_temp):
             cursor.execute(str(sql))
             db.commit()
         except:
-            logging.warning('更新数据失败!')
-            logging.warning(sql)
+            logging.info('更新数据失败!')
+            logging.info(sql)
             db.rollback()
 
 
@@ -193,13 +193,13 @@ def task_begin():
     with sqlite3.connect(db_file) as db:
         id_list = querydball(db)
         avlist = get_avlist()
-        logging.warning(avlist)
+        logging.info(avlist)
         # for id in id_list:
         for id in id_list:
             bilibili_temp = query_db(str(id))
             bilibili_temp.vip_privilege_1()   #领取会员权益(B币)
             bilibili_temp.vip_privilege_2()  # 领取会员权益(会员购)
-            logging.warning(bilibili_temp.coin_num())
+            logging.info(bilibili_temp.coin_num())
             if not bilibili_temp.double_watch:  # 非三无小号
                 if bilibili_temp.taskinfo_get():  # 双端任务
                     bilibili_temp.double_watch = 1
@@ -250,7 +250,7 @@ def task_begin():
                         bilibili_temp.coin_added = 1
 
             back2db(bilibili_temp)
-            logging.warning('------------------')
+            logging.info('------------------')
 
 
 def dynamic_task():
@@ -288,21 +288,21 @@ def spider_schedule():
     scheduler.remove_job('spider_schedule')
 
     try:
-        logging.warning('spider start...', datetime.now().strftime('%Y-%m-%d %X'))
+        logging.info('spider start...', datetime.now().strftime('%Y-%m-%d %X'))
         # my job code
         heart_beat()
         interval_seconds = random.randint(360, 400)
-        logging.warning('双端观看直播中..., 时长', interval_seconds)
+        logging.info('双端观看直播中..., 时长', interval_seconds)
         time.sleep(interval_seconds)
         task_begin()
-        logging.warning('spider end...', datetime.now().strftime('%Y-%m-%d %X'))
+        logging.info('spider end...', datetime.now().strftime('%Y-%m-%d %X'))
 
     except Exception as e:
-        logging.warning(traceback.format_exc(e))
+        logging.info(traceback.format_exc(e))
     finally:
         interval_hours = random.randint(3, 5)
         interval_minutes = random.randint(1, 60)
-        logging.warning('下次运行任务时间为', interval_hours, 'h', interval_minutes, 'm后')
+        logging.info('下次运行任务时间为', interval_hours, 'h', interval_minutes, 'm后')
         scheduler.add_job(spider_schedule, 'interval', hours=interval_hours,
                 minutes=interval_minutes, id='spider_schedule')
 

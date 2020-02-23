@@ -40,8 +40,8 @@ def get_access_key(userid, password):
     item['sign'] = get_sign(item)
     page_temp = json.loads(requests.post(base_url, data=item,headers=headers).text)
     if page_temp['code'] != 0:
-        logging.warning(page_temp)
-        logging.warning(page_temp['data'])
+        logging.info(page_temp)
+        logging.info(page_temp['data'])
         return '-1'
     access_key = page_temp["data"]['token_info']['access_token']
     return access_key

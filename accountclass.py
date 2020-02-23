@@ -27,7 +27,7 @@ class bilibili:
 
     # 显示账号信息
     def show(self):
-        logging.warning("id=%s,Password=%s,access_key=%s,cookies=%s" % (self.ID, self.Password, self.access_key, self.cookie))
+        logging.info("id=%s,Password=%s,access_key=%s,cookies=%s" % (self.ID, self.Password, self.access_key, self.cookie))
 
     # 检测今日任务是否已经完成
     def didfinished(self):
@@ -43,7 +43,7 @@ class bilibili:
         if json.loads(response.text)['code'] == 0:
             return True
         else:
-            logging.warning(response.text)
+            logging.info(response.text)
             return False
 
     # 检测token是否有效
@@ -57,7 +57,7 @@ class bilibili:
         if test_page['code'] == 0:
             return True
         else:
-            logging.warning(test_page)
+            logging.info(test_page)
             return False
 
     # 观看av号为aid的视频
@@ -68,7 +68,7 @@ class bilibili:
             cid = response['data']['cid']
             duration = response['data']['duration']
         else:
-            logging.warning("av%s信息解析失败" % aid)
+            logging.info("av%s信息解析失败" % aid)
             return False
         url = "https://api.bilibili.com/x/report/click/now?jsonp=jsonp"
         response = json.loads(requests.get(url).text)
@@ -87,9 +87,9 @@ class bilibili:
                     'dt': 7}
             response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
             if response['code'] == 0:
-                logging.warning("av%s观看成功" % aid)
+                logging.info("av%s观看成功" % aid)
                 return True
-        logging.warning("av%s观看失败 %s" % (aid, response))
+        logging.info("av%s观看失败 %s" % (aid, response))
         return False
 
     # 点赞某条动态
@@ -101,10 +101,10 @@ class bilibili:
                 'csrf_token': self.cookie['bili_jct']}
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
         if response['code'] == 0:
-            logging.warning("动态%s点赞成功" % did)
+            logging.info("动态%s点赞成功" % did)
             return True
         else:
-            logging.warning("动态%s点赞失败 %s" % (did, response))
+            logging.info("动态%s点赞失败 %s" % (did, response))
             return False
 
     # 直播区签到
@@ -113,7 +113,7 @@ class bilibili:
         if response['code'] == 0:
             return True
         else:
-            logging.warning("签到失败 %s" % (response))
+            logging.info("签到失败 %s" % (response))
             return False
 
     # 评论某视频
@@ -127,10 +127,10 @@ class bilibili:
                 'csrf': self.cookie['bili_jct']}
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
         if response['code'] == 0:
-            logging.warning("av%s评论成功" % aid)
+            logging.info("av%s评论成功" % aid)
             return True
         else:
-            logging.warning("av%s评论失败 %s" % (aid, response))
+            logging.info("av%s评论失败 %s" % (aid, response))
             return False
 
     # 分享某视频
@@ -148,7 +148,7 @@ class bilibili:
         if response['code'] == 0:
             return True
         else:
-            logging.warning("av%s分享失败 %s" % (aid, response))
+            logging.info("av%s分享失败 %s" % (aid, response))
             return False
 
     # 得到领取硬币的情况
@@ -158,7 +158,7 @@ class bilibili:
         if sign_page['data']['list']:
             for info in sign_page['data']['list']:
                 if info['reason'] == u"登录奖励" and info['time'][:10] == time.strftime("%Y-%m-%d", time.localtime()):
-                    # logging.warning() "今日已领硬币"
+                    # logging.info() "今日已领硬币"
                     return True
             return False
         else:
@@ -171,7 +171,7 @@ class bilibili:
         if sign_page['data']['list']:
             for info in sign_page['data']['list']:
                 if info['reason'] == u"礼品兑换" and info['time'][:10] == time.strftime("%Y-%m-%d", time.localtime()):
-                    logging.warning("今日已换硬币")
+                    logging.info("今日已换硬币")
                     return True
             return False
         else:
@@ -181,10 +181,10 @@ class bilibili:
     def get_sign_info(self):
         sign_page = json.loads(requests.get("https://api.live.bilibili.com/sign/GetSignInfo", cookies=self.cookie).text)
         if sign_page['data']['status'] == 0:
-            # logging.warning() "今日直播还未签到"
+            # logging.info() "今日直播还未签到"
             return False
         else:
-            # logging.warning() "今日直播已经签到"
+            # logging.info() "今日直播已经签到"
             return True
 
     # 转发动态
@@ -202,10 +202,10 @@ class bilibili:
                    'Origin': "https://space.bilibili.com"}
         response = json.loads(requests.post(url, data=data, headers=headers).text)
         if response['code'] == 0:
-            logging.warning("转发成功")
+            logging.info("转发成功")
             return True
         else:
-            logging.warning("转发失败")
+            logging.info("转发失败")
             return False
 
     # 给某视频投币
@@ -229,10 +229,10 @@ class bilibili:
             requests.post("https://api.bilibili.com/x/web-interface/coin/add", data=prompt_data, headers=headers,
                           cookies=self.cookie).text)
         if response['code'] == 0:
-            logging.warning("投币成功")
+            logging.info("投币成功")
             return True
         else:
-            logging.warning("投币失败 %s" % response['message'])
+            logging.info("投币失败 %s" % response['message'])
             return False
 
     # 得到应比数量
@@ -250,10 +250,10 @@ class bilibili:
                 'csrf_token': self.cookie['bili_jct']}
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
         if response['code'] == 0:
-            logging.warning("银瓜子兑换成功")
+            logging.info("银瓜子兑换成功")
             return True
         else:
-            logging.warning("银瓜子兑换失败 %s" % (response['message'].encode("utf-8")))
+            logging.info("银瓜子兑换失败 %s" % (response['message'].encode("utf-8")))
             return False
 
     # 检测观看任务
@@ -270,9 +270,9 @@ class bilibili:
         url = "https://api.live.bilibili.com/User/userOnlineHeart"
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
         if response['code'] == 0:
-            logging.warning("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_web")
+            logging.info("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_web")
         else:
-            logging.warning("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_web Error!!!")
+            logging.info("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_web Error!!!")
 
     # 手机端直播心跳
     def heart_mobile(self, room_id):
@@ -282,9 +282,9 @@ class bilibili:
         data['sign'] = myapi.get_sign(data)
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
         if response['code'] == 0:
-            logging.warning("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_mobile")
+            logging.info("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_mobile")
         else:
-            logging.warning("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_mobile Error!!!")
+            logging.info("[" + time.asctime(time.localtime(time.time())) + "]\tHeart_mobile Error!!!")
 
     # 检测直播区任务
     def taskinfo_get(self):
@@ -302,7 +302,7 @@ class bilibili:
         data = {'task_id': "double_watch_task",
                 'csrf_token': self.cookie['bili_jct']}
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
-        logging.warning(response['message'])
+        logging.info(response['message'])
 
     # 获取投币任务情况
     def get_coin_add_num(self):
@@ -332,7 +332,7 @@ class bilibili:
     def get_up_followers(self, uid):
         url = "https://api.bilibili.com/x/relation/followers?vmid=" + str(uid)
         followers_page = json.loads(requests.get(url).text)
-        logging.warning(followers_page['data']['total'])
+        logging.info(followers_page['data']['total'])
         return followers_page['data']['total']
 
     # 点赞并且如果是视频投稿抢前排评论
@@ -356,11 +356,11 @@ class bilibili:
         data = {'type': 1,
                 'csrf': self.cookie['bili_jct']}
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
-        logging.warning(response['message'])
+        logging.info(response['message'])
 
     def vip_privilege_2(self):
         url = "https://api.bilibili.com/x/vip/privilege/receive"
         data = {'type': 2,
                 'csrf': self.cookie['bili_jct']}
         response = json.loads(requests.post(url, data=data, cookies=self.cookie).text)
-        logging.warning(response['message'])
+        logging.info(response['message'])
